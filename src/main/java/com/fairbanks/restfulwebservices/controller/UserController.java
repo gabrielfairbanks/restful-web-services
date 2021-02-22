@@ -40,6 +40,14 @@ public class UserController {
         return user;
     }
 
+    @DeleteMapping(path = "/users/{id}")
+    public void deleteUser(@PathVariable Integer id){
+        User user = userDaoService.deleteById(id);
+        if(user == null){
+            throw new UserNotFoundException("User Id: "+ id);
+        }
+    }
+
     @PostMapping(path = "/users")
     public ResponseEntity<Object> createUser(@RequestBody User user){
         Integer id = user.getId();
