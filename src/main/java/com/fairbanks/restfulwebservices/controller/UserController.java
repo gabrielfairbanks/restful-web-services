@@ -6,6 +6,8 @@ import com.fairbanks.restfulwebservices.exception.UserAlreadyExistsException;
 import com.fairbanks.restfulwebservices.model.Post;
 import com.fairbanks.restfulwebservices.model.User;
 import com.fairbanks.restfulwebservices.service.UserDaoService;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -24,36 +26,41 @@ public class UserController {
     }
 
     @GetMapping(path = "/users")
-    public List<User> retrieveAllUsers(){
+    public List<User> retrieveAllUsers() {
         List<User> users = userDaoService.findAll();
-        if(users == null || users.size() == 0){
+        if (users == null || users.size() == 0) {
             throw new UserNotFoundException("No users exist");
         }
         return users;
     }
 
     @GetMapping(path = "/users/{id}")
-    public User retrieveUser(@PathVariable Integer id){
+    public EntityModel<User> retrieveUser(@PathVariable Integer id) {
         User user = userDaoService.findOne(id);
-        if(user == null){
-            throw new UserNotFoundException("User Id: "+ id);
+        if (user == null) {
+            throw new UserNotFoundException("User Id: " + id);
         }
-        return user;
+
+        EntityModel<User> resource = EntityModel.of(user);
+        WebMvcLinkBuilder linkTo = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).retrieveAllUsers());
+        resource.add(linkTo.withRel("all-users"));
+
+        return resource;
     }
 
     @DeleteMapping(path = "/users/{id}")
-    public void deleteUser(@PathVariable Integer id){
+    public void deleteUser(@PathVariable Integer id) {
         User user = userDaoService.deleteById(id);
-        if(user == null){
-            throw new UserNotFoundException("User Id: "+ id);
+        if (user == null) {
+            throw new UserNotFoundException("User Id: " + id);
         }
     }
 
     @PostMapping(path = "/users")
-    public ResponseEntity<Object> createUser(@Valid @RequestBody User user){
+    public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
         Integer id = user.getId();
-        if(id != null && userDaoService.findOne(id) != null){
-            throw new UserAlreadyExistsException("User Id: "+ id + " already exists");
+        if (id != null && userDaoService.findOne(id) != null) {
+            throw new UserAlreadyExistsException("User Id: " + id + " already exists");
         }
 
         User createdUser = userDaoService.save(user);
@@ -63,28 +70,28 @@ public class UserController {
     }
 
     @GetMapping(path = "/users/{userId}/posts")
-    public List<Post> retrieveAllUsers(@PathVariable Integer userId){
+    public List<Post> retrieveAllUsers(@PathVariable Integer userId) {
         List<Post> posts = userDaoService.findAllPosts(userId);
-        if(posts == null || posts.size() == 0){
-            throw new PostNotFoundException("No posts exist for user: "+userId);
+        if (posts == null || posts.size() == 0) {
+            throw new PostNotFoundException("No posts exist for user: " + userId);
         }
         return posts;
     }
 
     @GetMapping(path = "/users/{userId}/posts/{postId}")
-    public Post retrieveAllUsers(@PathVariable Integer userId, @PathVariable Integer postId){
+    public Post retrieveAllUsers(@PathVariable Integer userId, @PathVariable Integer postId) {
         Post post = userDaoService.findOnePost(userId, postId);
-        if(post == null){
-            throw new PostNotFoundException("Post id: "+postId+" doesn't exist for user: "+userId);
+        if (post == null) {
+            throw new PostNotFoundException("Post id: " + postId + " doesn't exist for user: " + userId);
         }
         return post;
     }
 
     @PostMapping(path = "/users/{userId}/posts")
-    public  ResponseEntity<Object> addPostToUser(@PathVariable Integer userId, @RequestBody Post post){
+    public ResponseEntity<Object> addPostToUser(@PathVariable Integer userId, @RequestBody Post post) {
         User user = userDaoService.findOne(userId);
-        if(user == null){
-            throw new UserNotFoundException("User Id: "+ userId);
+        if (user == null) {
+            throw new UserNotFoundException("User Id: " + userId);
         }
 
         Post createdPost = userDaoService.addPost(userId, post);
