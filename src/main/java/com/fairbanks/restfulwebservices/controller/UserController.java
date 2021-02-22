@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/users")
-    public ResponseEntity<Object> createUser(@RequestBody User user){
+    public ResponseEntity<Object> createUser(@Valid @RequestBody User user){
         Integer id = user.getId();
         if(id != null && userDaoService.findOne(id) != null){
             throw new UserAlreadyExistsException("User Id: "+ id + " already exists");
