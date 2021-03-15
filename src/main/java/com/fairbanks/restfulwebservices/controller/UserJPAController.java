@@ -53,20 +53,17 @@ public class UserJPAController {
 
     @DeleteMapping(path = "/jpa/users/{id}")
     public void deleteUser(@PathVariable Integer id) {
-        User user = userDaoService.deleteById(id);
-        if (user == null) {
-            throw new UserNotFoundException("User Id: " + id);
-        }
+        userRepository.deleteById(id);
     }
 
     @PostMapping(path = "/jpa/users")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
         Integer id = user.getId();
-        if (id != null && userDaoService.findOne(id) != null) {
+        if (id != null && userRepository.findById(id).isPresent()) {
             throw new UserAlreadyExistsException("User Id: " + id + " already exists");
         }
 
-        User createdUser = userDaoService.save(user);
+        User createdUser = userRepository.save(user);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdUser.getId()).toUri();
         return ResponseEntity.created(location).build();
