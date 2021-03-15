@@ -71,11 +71,11 @@ public class UserJPAController {
 
     @GetMapping(path = "/jpa/users/{userId}/posts")
     public List<Post> retrieveAllUsers(@PathVariable Integer userId) {
-        List<Post> posts = userDaoService.findAllPosts(userId);
-        if (posts == null || posts.size() == 0) {
-            throw new PostNotFoundException("No posts exist for user: " + userId);
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User Id: " + userId);
         }
-        return posts;
+        return user.get().getPosts();
     }
 
     @GetMapping(path = "/jpa/users/{userId}/posts/{postId}")
