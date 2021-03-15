@@ -2,20 +2,22 @@ package com.fairbanks.restfulwebservices.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 @Data
-@ApiModel(description = "Details about users")
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@ApiModel(description = "Details about users")
 public class User {
 
     @Id
@@ -31,12 +33,7 @@ public class User {
     @ApiModelProperty(notes = "Birth date should be in the past.")
     private Date birthDate;
 
-    @OneToMany
-    private List<Post> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
 
-    public User(Integer id, String name, Date birthDate) {
-        this.id = id;
-        this.name = name;
-        this.birthDate = birthDate;
-    }
 }

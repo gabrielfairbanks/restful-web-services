@@ -5,3 +5,5 @@ insert into user values (NEXTVAL('USER_ID_SEQUENCE'),sysdate(), 'Fernando Fairba
 insert into user values (NEXTVAL('USER_ID_SEQUENCE'),sysdate(), 'Isabella Fairbanks');
 insert into user values (NEXTVAL('USER_ID_SEQUENCE'),sysdate(), 'Soraya Fairbanks');
 insert into user values (NEXTVAL('USER_ID_SEQUENCE'),sysdate(), 'Claudio Fairbanks');
+
+insert into post values (NEXTVAL('POST_ID_SEQUENCE'),'I love my family',sysdate(),1);

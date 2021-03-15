@@ -15,12 +15,12 @@ public class UserDaoService {
     private static int usersCount = 6;
 
     static {
-        users.add(new User(1, "Gabriel", new Date()));
-        users.add(new User(2, "Julia", new Date()));
-        users.add(new User(3, "Bia", new Date()));
-        users.add(new User(4, "Nando", new Date()));
-        users.add(new User(5, "Isabella", new Date()));
-        users.add(new User(6, "Scarlet", new Date()));
+        users.add(new User(1, "Gabriel", new Date(), null));
+        users.add(new User(2, "Julia", new Date(), null));
+        users.add(new User(3, "Bia", new Date(), null));
+        users.add(new User(4, "Nando", new Date(), null));
+        users.add(new User(5, "Isabella", new Date(), null));
+        users.add(new User(6, "Scarlet", new Date(), null));
     }
 
     public List<User> findAll() {
