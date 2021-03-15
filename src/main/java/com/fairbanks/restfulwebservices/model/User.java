@@ -3,7 +3,12 @@ package com.fairbanks.restfulwebservices.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
@@ -12,8 +17,12 @@ import java.util.List;
 
 @Data
 @ApiModel(description = "Details about users")
+@Entity
+@NoArgsConstructor
 public class User {
 
+    @Id
+    @GeneratedValue
     private Integer id;
 
     @Size(min = 2, message = "Name should have at least 2 characters")
@@ -24,7 +33,7 @@ public class User {
     @ApiModelProperty(notes = "Birth date should be in the past.")
     private Date birthDate;
 
-
+    @OneToMany
     private List<Post> posts = new ArrayList<>();
 
     public User(Integer id, String name, Date birthDate) {
