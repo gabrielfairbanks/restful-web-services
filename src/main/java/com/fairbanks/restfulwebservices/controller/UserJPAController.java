@@ -5,6 +5,7 @@ import com.fairbanks.restfulwebservices.exception.UserAlreadyExistsException;
 import com.fairbanks.restfulwebservices.exception.UserNotFoundException;
 import com.fairbanks.restfulwebservices.model.Post;
 import com.fairbanks.restfulwebservices.model.User;
+import com.fairbanks.restfulwebservices.repository.PostRepository;
 import com.fairbanks.restfulwebservices.repository.UserRepository;
 import com.fairbanks.restfulwebservices.service.UserDaoService;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class UserJPAController {
 
     private final UserDaoService userDaoService;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
 
     @GetMapping(path = "/jpa/users")
@@ -80,24 +82,25 @@ public class UserJPAController {
 
     @GetMapping(path = "/jpa/users/{userId}/posts/{postId}")
     public Post retrieveAllUsers(@PathVariable Integer userId, @PathVariable Integer postId) {
-        Post post = userDaoService.findOnePost(userId, postId);
-        if (post == null) {
-            throw new PostNotFoundException("Post id: " + postId + " doesn't exist for user: " + userId);
+        Optional<Post> postOptional = postRepository.findById(postId);
+        if (postOptional.isEmpty()) {
+            throw new PostNotFoundException("Post Id: " + postId);
         }
-        return post;
+        return postOptional.get();
     }
 
     @PostMapping(path = "/jpa/users/{userId}/posts")
     public ResponseEntity<Object> addPostToUser(@PathVariable Integer userId, @RequestBody Post post) {
-        User user = userDaoService.findOne(userId);
-        if (user == null) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
             throw new UserNotFoundException("User Id: " + userId);
         }
 
-        Post createdPost = userDaoService.addPost(userId, post);
+        User user = userOptional.get();
+        post.setUser(user);
+        postRepository.save(post);
 
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdPost.getId()).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(post.getId()).toUri();
         return ResponseEntity.created(location).build();
     }
 }
